@@ -1,4 +1,4 @@
 [jd]
-APPKEY    = "7f5a9fc39d60737c75c5f541b2b48c5d"
-APPSECRET = "f40bd0d4c8384a29b4b689dcb15e9a2b"
+APPKEY    = ""
+APPSECRET = ""
 METHOD    = "jd.union.open.order.row.query"
