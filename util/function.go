@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"io/ioutil"
 	"net/http"
+	// "github.com/google/logger"
 )
 
 const (
@@ -33,7 +34,6 @@ func HttpGet(url string) ([]byte, error) {
 }
 
 func Close(response *http.Response) {
-
 	e := response.Body.Close()
 	if e != nil {
 		panic(e)
