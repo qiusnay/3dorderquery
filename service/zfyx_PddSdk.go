@@ -77,7 +77,7 @@ func (J *Pddsdk) GetOrders(start string, end string) interface{} {
 }
 
 //生成请求参数和签名
-func (J *Pddsdk) SetSignJointUrlParam(paramstr string) interface{} {
+func (J *Pddsdk) SetSignJointUrlParam(paramstr string) {
 	param := PddOrderReq{}
 	json.Unmarshal([]byte(paramstr), &param)
 	param.Client_id = pddConf.Pdd.APPKEY
@@ -118,5 +118,4 @@ func (J *Pddsdk) SetSignJointUrlParam(paramstr string) interface{} {
 	u.Add("sign", strings.ToUpper(util.Md5(builder.String())))
 	//拼接参数
 	J.SignAndUri = u.Encode()
-	return J
 }

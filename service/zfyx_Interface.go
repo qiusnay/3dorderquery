@@ -3,7 +3,7 @@ package service
 //定义接口
 type UnionSDKAPI interface {
 	GetOrders(start string, end string) interface{}
-	SetSignJointUrlParam(param string) interface{}
+	SetSignJointUrlParam(param string)
 }
 
 type Apiconfig struct {

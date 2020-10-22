@@ -96,7 +96,7 @@ func (J *Jdsdk) GetOrders(start string, end string) interface{} {
 }
 
 //生成请求参数和签名
-func (J *Jdsdk) SetSignJointUrlParam(paramjson string) interface{} {
+func (J *Jdsdk) SetSignJointUrlParam(paramjson string) {
 	J.RequestParam.App_key = conf.Jd.APPKEY
 	J.RequestParam.Format = "json"
 	J.RequestParam.V = "1.0"
@@ -138,5 +138,4 @@ func (J *Jdsdk) SetSignJointUrlParam(paramjson string) interface{} {
 	u.Add("sign", strings.ToUpper(util.Md5(builder.String())))
 	//拼接参数
 	J.SignAndUri = u.Encode()
-	return J
 }
