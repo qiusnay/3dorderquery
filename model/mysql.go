@@ -1,10 +1,12 @@
 package model
+
 import (
 	"fmt"
 	"time"
+
+	"github.com/google/logger"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/util"
 )
 
@@ -21,10 +23,11 @@ type Database struct {
 	MaxIdle  int    `toml:"max_idle"`
 	MaxOpen  int    `toml:"max_open"`
 }
-type	config struct {
+type config struct {
 	Master Database   `toml:"master"`
 	Slaves []Database `toml:"slave"`
 }
+
 var conf config
 
 var DB *gorm.DB
@@ -33,9 +36,9 @@ func createConnectionURL(username, password, addr, dbName string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", username, password, addr, dbName)
 }
 
-func DbStart()(*gorm.DB, error) {
+func DbStart() (*gorm.DB, error) {
 	util.Config().Bind("conf", "database", &conf)
-	
+
 	logger.Infof("database connect erro : %s", conf.Master.Addr)
 	db, err := gorm.Open("mysql", createConnectionURL(conf.Master.Username, conf.Master.Password, conf.Master.Addr, conf.Master.DbName))
 	if err != nil {
@@ -66,9 +69,11 @@ func DbStart()(*gorm.DB, error) {
 func Automigrate() {
 	if !DB.HasTable("tb_jd_original_order") {
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东原始订单数据表{裘年宝}'").CreateTable(&JdOriginalOrder{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '拼多多原始订单数据表{裘年宝}'").CreateTable(&PddOriginalOrder{})
 	} else {
 		// fmt.Println("检查更新.......")
 		DB.AutoMigrate(&JdOriginalOrder{})
+		DB.AutoMigrate(&PddOriginalOrder{})
 		// fmt.Println("数据已更新!")
 	}
 }

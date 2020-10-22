@@ -8,11 +8,6 @@ import (
 	// "github.com/google/logger"
 )
 
-const (
-	JD_HOST            string = "https://router.jd.com/api?"
-	CUSTOMREQMETHODGET string = "GET"
-)
-
 //生成 MD5
 func Md5(s string) string {
 	h := md5.New()
@@ -21,7 +16,7 @@ func Md5(s string) string {
 }
 
 func HttpGet(url string) ([]byte, error) {
-	req, _ := http.NewRequest(CUSTOMREQMETHODGET, url, nil)
+	req, _ := http.NewRequest("GET", url, nil)
 	//设置请求头部信息
 	//req.Header.Add("Authorization", q.Token)
 	//发送请求
@@ -39,7 +34,6 @@ func Close(response *http.Response) {
 		panic(e)
 	}
 }
-
 
 type Onestruct struct {
 	Key   string
