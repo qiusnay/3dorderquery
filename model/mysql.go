@@ -68,8 +68,8 @@ func DbStart() (*gorm.DB, error) {
 
 func Automigrate() {
 	if !DB.HasTable("tb_jd_original_order") {
-		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东原始订单数据表{裘年宝}'").CreateTable(&JdOriginalOrder{})
-		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '拼多多原始订单数据表{裘年宝}'").CreateTable(&PddOriginalOrder{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东原始订单数据表{qiusnay}'").CreateTable(&JdOriginalOrder{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '拼多多原始订单数据表{qiusnay}'").CreateTable(&PddOriginalOrder{})
 	} else {
 		// fmt.Println("检查更新.......")
 		DB.AutoMigrate(&JdOriginalOrder{})
