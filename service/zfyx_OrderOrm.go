@@ -51,6 +51,49 @@ type JdOrders struct {
 	HasMore           bool    `json:"hasMore"`           //是否还有更多,true：还有数据；false:已查询完毕，没有数据
 }
 
+type JdItemOriginal struct {
+	SkuId                 int     `json:"skuId"`
+	Pid                   int     `json:"pid"`
+	WareId                int     `json:"wareId"`
+	SkuName               string  `json:"skuName"`
+	Cid1                  int     `json:"cid1"`
+	Cid1Name              string  `json:"cid1Name"`
+	Cid2                  int     `json:"cid2"`
+	Cid2Name              string  `json:"cid2Name"`
+	Cid3                  int     `json:"cid3`
+	Cid3Name              string  `json:"cid3Name"`
+	BrandCode             int     `json:"brandCode"`
+	BrandName             string  `json:"brandName"`
+	Owner                 string  `json:"owner"`
+	ImageUrl              string  `json:"imageUrl"`
+	ImgList               string  `json:"imgList"`
+	Vid                   int     `json:"vid`
+	PcPrice               float64 `json:"pcPrice"`
+	WlPrice               float64 `json:"wlPrice"`
+	PcCommissionShare     float64 `json:"pcCommissionShare"`
+	WlCommissionShare     float64 `json:"wlCommissionShare"`
+	PcCommission          float64 `json:"pcCommission"`
+	WlCommission          float64 `json:"wlCommission"`
+	HasCoupon             int     `json:"hasCoupon"`
+	IsHot                 int     `json:"isHot"`
+	CouponId              int     `json:"couponId"`
+	CouponLink            string  `json:"couponLink"`
+	RfId                  int     `json:"rfId`
+	Comments              int     `json:"comments"`
+	GoodComments          int     `json:"goodComments"`
+	GoodCommentsShare     float64 `json:"goodCommentsShare"`
+	VenderName            string  `json:"venderName"`
+	InOrderCount30Days    int     `json:"inOrderCount30Days"`
+	InOrderCount30DaysSku int     `json:"inOrderCount30DaysSku"`
+	IsPinGou              int     `json:"isPinGou"`
+	PingouActiveId        int     `json:"pingouActiveId"`
+	PingouPrice           float64 `json:"pingouPrice"`
+	PingouTmCount         int     `json:"pingouTmCount"`
+	EliteId               int     `json:"eliteId"`
+	CreateTime            string  `json:"create_time"`
+	UpdateTime            string  `json:"update_time"`
+}
+
 type PddOrder struct {
 	OrderSn               string `json:"order_sn"`
 	GoodsId               int    `json:"goods_id"`

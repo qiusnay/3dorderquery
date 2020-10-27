@@ -7,8 +7,10 @@ type UnionSDKAPI interface {
 }
 
 type Apiconfig struct {
-	APPKEY    string
-	APPSECRET string
-	METHOD    string
-	HOST      string
+	APPKEY       string
+	APPSECRET    string
+	METHOD       string
+	HOST         string
+	METHODITEMD  string
+	ACCESS_TOKEN string
 }

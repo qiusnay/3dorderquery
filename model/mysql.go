@@ -58,6 +58,8 @@ func DbStart() (*gorm.DB, error) {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	db.DB().SetConnMaxLifetime(time.Hour)
 
+	DB.LogMode(true)
+
 	go keepDbAlived(db)
 	go Automigrate()
 
@@ -67,9 +69,12 @@ func DbStart() (*gorm.DB, error) {
 }
 
 func Automigrate() {
-	if !DB.HasTable("tb_jd_original_order") {
+	if !DB.HasTable("tb_dingdan") {
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东原始订单数据表{qiusnay}'").CreateTable(&JdOriginalOrder{})
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '拼多多原始订单数据表{qiusnay}'").CreateTable(&PddOriginalOrder{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东商品数据表{qiusnay}'").CreateTable(&JdItemOriginal{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '订单商品表{qiusnay}'").CreateTable(&TbDingdanItems{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '订单表{qiusnay}'").CreateTable(&TbDingdan{})
 	} else {
 		// fmt.Println("检查更新.......")
 		DB.AutoMigrate(&JdOriginalOrder{})
