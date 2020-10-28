@@ -2,12 +2,14 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"reflect"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/model"
 	"github.com/qiusnay/3dorderquery/util"
 )
@@ -82,8 +84,8 @@ func (J *Jdsdk) GetOrders(start string, end string) interface{} {
 	if e != nil {
 		panic(e)
 	}
-	// logger.Info(fmt.Sprintf("get jd order %+v", string(response.JdUnionOpenOrderRowQueryResponse.Result)))
-	result := OrderResult{}
+	logger.Info(fmt.Sprintf("get jd order %+v", string(response.JdUnionOpenOrderRowQueryResponse.Result)))
+	result := JdOrderResult{}
 	e = json.Unmarshal([]byte(response.JdUnionOpenOrderRowQueryResponse.Result), &result)
 	if e != nil {
 		panic(e)

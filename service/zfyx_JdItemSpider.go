@@ -29,11 +29,11 @@ type JdItemsAllParam struct {
 
 type JdKplOpenUnionSearchByelitedResponse struct {
 	JdKplOpenUnionSearchByelitedResponse struct {
-		Data       []JdItemOriginal `json:"data"`
-		Code       string           `json:"code"`
-		EliteId    int              `json:"eliteId"`
-		EliteName  string           `json:"eliteName"`
-		TotalCount int              `json:"totalCount"`
+		Data       []model.JdItemOriginal `json:"data"`
+		Code       string                 `json:"code"`
+		EliteId    int                    `json:"eliteId"`
+		EliteName  string                 `json:"eliteName"`
+		TotalCount int                    `json:"totalCount"`
 	} `json:"jd_kpl_open_union_search_byelited_response"`
 }
 
@@ -79,12 +79,13 @@ func (J *JdItemsdk) GetJdItems(brand int) interface{} {
 	}
 	// logger.Info(fmt.Sprintf("get jd item %+v", response.JdKplOpenUnionSearchByelitedResponse.Data))
 	for _, item := range response.JdKplOpenUnionSearchByelitedResponse.Data {
-		result := JdItemOriginal{}
+		result := model.JdItemOriginal{}
 		item.UpdateTime = strconv.FormatInt(time.Now().Unix(), 10)
 		item.CreateTime = strconv.FormatInt(time.Now().Unix(), 10)
 		item.EliteId = response.JdKplOpenUnionSearchByelitedResponse.EliteId
 		model.DB.Table("tb_jd_original_items").Where("sku_id = ?", item.SkuId).First(&result)
 		// logger.Info(fmt.Sprintf("dddddd  %+v", result.SkuId))
+		// int_sku_id, _ := strconv.Atoi(result.SkuId)
 		if result.SkuId > 0 {
 			model.DB.Table("tb_jd_original_items").Where("sku_id = ?", result.SkuId).Updates(map[string]interface{}{
 				"update_time":         item.UpdateTime,

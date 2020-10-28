@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -17,22 +18,23 @@ func main() {
 	}
 	logger.Init("Logger", false, true, lf)
 	model.DbStart()
+	model.RedisStart()
 	for {
 		timer1 := time.NewTimer(time.Second * 2)
 		<-timer1.C
 
-		// var ShopSdk service.UnionSDKAPI
+		var ShopSdk service.UnionSDKAPI
 
 		// starttime := time.Now().Add(-time.Minute * 60).Format("2006-01-02 15:04:05")
 		// endtime := time.Now().Format("2006-01-02 15:04:05")
 		//京东订单抓单
-		// ShopSdk = new(service.Jdsdk)
-		// JdOrders := ShopSdk.GetOrders("2020-10-15 11:04:05", "2020-10-15 12:00:05")
-		// logger.Info(fmt.Sprintf("response jd %+v", JdOrders))
-		//拼多多订单抓单
-		// ShopSdk = new(service.Pddsdk)
-		// PddOrders := ShopSdk.GetOrders("2020-10-21 13:00:00", "2020-10-21 14:00:00")
-		// logger.Info(fmt.Sprintf("response pdd %+v", PddOrders))
+		ShopSdk = new(service.Jdsdk)
+		JdOrders := ShopSdk.GetOrders("2020-10-15 11:04:05", "2020-10-15 12:00:05")
+		logger.Info(fmt.Sprintf("response jd %+v", JdOrders))
+		// //拼多多订单抓单
+		ShopSdk = new(service.Pddsdk)
+		PddOrders := ShopSdk.GetOrders("2020-10-21 13:00:00", "2020-10-21 14:00:00")
+		logger.Info(fmt.Sprintf("response pdd %+v", PddOrders))
 
 		//京东商城抓商品
 		//频道id：
@@ -43,8 +45,13 @@ func main() {
 			ShopSdkS.GetJdItems(brand)
 		}
 
-		//同步tb_dingdan,tb_dingdan_items
+		//京东订单同步tb_dingdan,tb_dingdan_items
+		syncJdOrderModel := new(service.JdOrderCreate)
+		syncJdOrderModel.Sync()
 
+		//拼多多订单同步tb_dingdan,tb_dingdan_items
+		syncPddOrderModel := new(service.PddOrderCreate)
+		syncPddOrderModel.Sync()
 		// logger.Info(fmt.Sprintf("response jd %+v", JdOrders))
 	}
 }

@@ -15,8 +15,8 @@ import (
 
 type OrderListGetResponse struct {
 	OrderListGetResponse struct {
-		OrderList  []PddOrder `json:"order_list"`
-		TotalCount int        `json:"total_count"`
+		OrderList  []model.PddOriginalOrder `json:"order_list"`
+		TotalCount int                      `json:"total_count"`
 	} `json:"order_list_get_response"`
 }
 
