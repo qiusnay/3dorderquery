@@ -70,7 +70,7 @@ func (s *JdOrderCreate) CreateOrderItem(order model.JdOriginalOrder, Did int64) 
 	model.DB.Create(&model.TbDingdanItems{
 		Did:            Did,
 		Userid:         userid,
-		ShopId:         10001,
+		ShopId:         10000,
 		Pid:            strconv.FormatInt(order.SkuId, 10),
 		Pnum:           order.SkuNum,
 		Price:          order.Price * float64(order.SkuNum),
