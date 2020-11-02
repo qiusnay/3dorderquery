@@ -2,9 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"net/url"
-	"reflect"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -25,9 +22,7 @@ type Pddsdk struct {
 }
 
 type PddOrderReq struct {
-	Type              string `json:"type"`
-	Client_id         string `json:"client_id"`
-	Timestamp         string `json:"timestamp"`
+	SysParam          PddSysParam
 	Data_type         string `json:"data_type"`
 	Page              string `json:"pageNo"`    //页码，返回第几页结果
 	Page_size         string `json:"pageSize"`  //每页包含条数，上限为500
@@ -46,22 +41,15 @@ func (J *Pddsdk) GetParams(start string, end string) PddOrderReq {
 	return ParamStruct
 }
 
-type configpdd struct {
-	Pdd Apiconfig `toml:"pdd"`
-}
-
-var pddConf configpdd
-
 //获取订单
 func (J *Pddsdk) GetOrders(start string, end string) interface{} {
-	util.Config().Bind("conf", "thirdpartysdk", &pddConf)
-	// logger.Info(fmt.Sprintf("get pdd conf %+v", pddConf))
+	util.Config().Bind("conf", "thirdpartysdk", &PddConf)
 	Param := J.GetParams(start, end)
 	paramsString, _ := json.Marshal(Param)
-	J.SetSignJointUrlParam(string(paramsString))
+	SignAndUri := SetSignJointUrlParam(string(paramsString))
 	var urls strings.Builder
-	urls.WriteString(pddConf.Pdd.HOST)
-	urls.WriteString(J.SignAndUri)
+	urls.WriteString(PddConf.Pdd.HOST)
+	urls.WriteString(SignAndUri)
 	body, _ := util.HttpGet(urls.String())
 	response := &OrderListGetResponse{}
 	e := json.Unmarshal([]byte(body), &response)
@@ -74,48 +62,4 @@ func (J *Pddsdk) GetOrders(start string, end string) interface{} {
 		model.DB.Table("tb_pdd_original_order").Create(&ord)
 	}
 	return *response
-}
-
-//生成请求参数和签名
-func (J *Pddsdk) SetSignJointUrlParam(paramstr string) {
-	param := PddOrderReq{}
-	json.Unmarshal([]byte(paramstr), &param)
-	param.Client_id = pddConf.Pdd.APPKEY
-	param.Data_type = "json"
-	param.Type = pddConf.Pdd.METHOD
-
-	param.Timestamp = strconv.FormatInt(time.Now().Unix(), 10)
-
-	values := reflect.ValueOf(param)
-	keys := reflect.TypeOf(param)
-	count := values.NumField()
-	SortSlice := util.Items{}
-	for i := 0; i < count; i++ {
-		value := values.Field(i)
-		key := keys.Field(i)
-		switch value.Kind() {
-		case reflect.String:
-			SortSlice = append(SortSlice, util.Onestruct{strings.ToLower(key.Name), value.String()})
-		case reflect.Int:
-			SortSlice = append(SortSlice, util.Onestruct{strings.ToLower(key.Name), value.String()})
-		}
-	}
-	sort.Sort(SortSlice)
-
-	var builder strings.Builder
-	u := url.Values{}
-	builder.WriteString(pddConf.Pdd.APPSECRET)
-	for _, person := range SortSlice {
-		if person.Value == "" {
-			continue
-		}
-		builder.WriteString(strings.ToLower(person.Key) + person.Value)
-		u.Add(strings.ToLower(person.Key), person.Value)
-	}
-	builder.WriteString(pddConf.Pdd.APPSECRET)
-
-	//生成签名
-	u.Add("sign", strings.ToUpper(util.Md5(builder.String())))
-	//拼接参数
-	J.SignAndUri = u.Encode()
 }
