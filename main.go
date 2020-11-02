@@ -33,7 +33,7 @@ func main() {
 		// logger.Info(fmt.Sprintf("response jd %+v", JdOrders))
 		// //拼多多订单抓单
 		ShopSdk = new(service.Pddsdk)
-		PddOrders := ShopSdk.GetOrders("2020-10-21 13:00:00", "2020-10-21 14:00:00")
+		PddOrders := ShopSdk.GetOrders("2020-10-30 13:00:00", "2020-10-31 12:00:00")
 		logger.Info(fmt.Sprintf("response pdd %+v", PddOrders))
 
 		//京东商城抓商品

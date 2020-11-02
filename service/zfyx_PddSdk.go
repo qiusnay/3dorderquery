@@ -2,10 +2,12 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/model"
 	"github.com/qiusnay/3dorderquery/util"
 )
@@ -22,12 +24,11 @@ type Pddsdk struct {
 }
 
 type PddOrderReq struct {
-	SysParam          PddSysParam
-	Data_type         string `json:"data_type"`
-	Page              string `json:"pageNo"`    //页码，返回第几页结果
-	Page_size         string `json:"pageSize"`  //每页包含条数，上限为500
-	End_update_time   string `json:"startTime"` //查询时间，建议使用分钟级查询，格式：yyyyMMddHH、yyyyMMddHHmm或yyyyMMddHHmmss，如201811031212 的查询范围从12:12:00--12:12:59
-	Start_update_time string `json:"endTime"`   //查询时间，建议使用分钟级查询，格式：yyyyMMddHH、yyyyMMddHHmm或yyyyMMddHHmmss，如201811031212 的查询范围从12:12:00--12:12:59
+	Type              string `json:"type"`
+	Page              string `json:"page"`              //页码，返回第几页结果
+	Page_size         string `json:"page_size"`         //每页包含条数，上限为500
+	End_update_time   string `json:"start_update_time"` //查询时间，建议使用分钟级查询，格式：yyyyMMddHH、yyyyMMddHHmm或yyyyMMddHHmmss，如201811031212 的查询范围从12:12:00--12:12:59
+	Start_update_time string `json:"end_update_time"`   //查询时间，建议使用分钟级查询，格式：yyyyMMddHH、yyyyMMddHHmm或yyyyMMddHHmmss，如201811031212 的查询范围从12:12:00--12:12:59
 }
 
 func (J *Pddsdk) GetParams(start string, end string) PddOrderReq {
@@ -38,6 +39,7 @@ func (J *Pddsdk) GetParams(start string, end string) PddOrderReq {
 	ParamStruct.End_update_time = strconv.FormatInt(endUnix.Unix(), 10)
 	ParamStruct.Page = strconv.Itoa(1)
 	ParamStruct.Page_size = strconv.Itoa(10)
+	ParamStruct.Type = PddConf.Pdd.METHOD
 	return ParamStruct
 }
 
@@ -45,12 +47,14 @@ func (J *Pddsdk) GetParams(start string, end string) PddOrderReq {
 func (J *Pddsdk) GetOrders(start string, end string) interface{} {
 	util.Config().Bind("conf", "thirdpartysdk", &PddConf)
 	Param := J.GetParams(start, end)
-	paramsString, _ := json.Marshal(Param)
-	SignAndUri := SetSignJointUrlParam(string(paramsString))
+	// paramsString, _ := json.Marshal(Param)
+	SignAndUri := SetSignJointUrlParam(Param)
 	var urls strings.Builder
 	urls.WriteString(PddConf.Pdd.HOST)
 	urls.WriteString(SignAndUri)
 	body, _ := util.HttpGet(urls.String())
+	fmt.Println(urls.String())
+	logger.Info(fmt.Sprintf("response %+v", string(body)))
 	response := &OrderListGetResponse{}
 	e := json.Unmarshal([]byte(body), &response)
 

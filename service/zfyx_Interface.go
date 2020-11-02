@@ -45,12 +45,6 @@ type JdOrderResult struct {
 	Data      []model.JdOriginalOrder
 }
 
-type PddSysParam struct {
-	Type      string `json:"type"`
-	Client_id string `json:"client_id"`
-	Timestamp string `json:"timestamp"`
-}
-
 type PddUrlReq struct {
 	CustomParameters     map[string]string `json:"custom_parameters"`      //自定义参数，为链接打上自定义标签；自定义参数最长限制64个字节；格式为： {"uid":"11111","sid":"22222"} ，其中 uid 用户唯一标识，可自行加密后传入，每个用户仅且对应一个标识，必填； sid 上下文信息标识，例如sessionId等，非必填。该json字符串中也可以加入其他自定义的key
 	GenerateSchemaUrl    bool              `json:"generate_schema_url"`    //是否返回 schema URL
@@ -68,7 +62,16 @@ func SetSignJointUrlParam(param interface{}) string {
 	pddParams["data_type"] = "json"
 	pddParams["client_id"] = PddConf.Pdd.APPKEY
 	pddParams["timestamp"] = strconv.FormatInt(time.Now().Unix(), 10)
+
 	if pddStruct, isin := param.(PddUrlReq); isin {
+		t := reflect.TypeOf(pddStruct)
+		v := reflect.ValueOf(pddStruct)
+		for k := 0; k < t.NumField(); k++ {
+			// fmt.Println(fmt.Sprintf("key show  : %+v", t.Field(k).Name))
+			pddParams[t.Field(k).Name] = v.Field(k).Interface()
+		}
+	}
+	if pddStruct, isin := param.(PddOrderReq); isin {
 		t := reflect.TypeOf(pddStruct)
 		v := reflect.ValueOf(pddStruct)
 		for k := 0; k < t.NumField(); k++ {
