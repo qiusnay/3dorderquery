@@ -33,6 +33,7 @@ we_app_web_view_url:唤起微信app推广链接
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -42,6 +43,12 @@ import (
 )
 
 func main() {
+	const logPath = "./log/api.log"
+	lf, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
+	if err != nil {
+		logger.Fatalf("Failed to open log file: %v", err)
+	}
+	logger.Init("Logger", false, true, lf)
 	mux := http.NewServeMux()
 	mux.Handle("/", &myAPIHandler{})
 	mux.HandleFunc("/api/getpddurl", getUrlPinduoduo)

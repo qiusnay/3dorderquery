@@ -61,7 +61,7 @@ func (J *JdItemsdk) GetParams(brand int) string {
 }
 
 //获取订单
-func (J *JdItemsdk) GetJdItems(brand int) interface{} {
+func (J *JdItemsdk) FetchJdItems(brand int) interface{} {
 	util.Config().Bind("conf", "thirdpartysdk", &conf)
 	// logger.Info(fmt.Sprintf("get jd order %+v", conf))
 	Param := J.GetParams(brand)
@@ -104,7 +104,7 @@ func (J *JdItemsdk) GetJdItems(brand int) interface{} {
 		model.DB.Table("tb_jd_original_items").Create(&item)
 		// logger.Info(fmt.Sprintf("item create  %+v", item))
 	}
-	return nil
+	return urls.String()
 }
 
 //生成请求参数和签名

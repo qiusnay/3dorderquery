@@ -58,6 +58,11 @@ type PddUrlReq struct {
 
 //生成请求参数和签名
 func SetSignJointUrlParam(param interface{}) string {
+	defer func() {
+		if err := recover(); err != nil {
+			// logger.Error(err)
+		}
+	}()
 	pddParams := make(map[string]interface{})
 	pddParams["data_type"] = "json"
 	pddParams["client_id"] = PddConf.Pdd.APPKEY
@@ -79,6 +84,14 @@ func SetSignJointUrlParam(param interface{}) string {
 			pddParams[t.Field(k).Name] = v.Field(k).Interface()
 		}
 	}
+	if pddStruct, isin := param.(PddItemReq); isin {
+		t := reflect.TypeOf(pddStruct)
+		v := reflect.ValueOf(pddStruct)
+		for k := 0; k < t.NumField(); k++ {
+			// fmt.Println(fmt.Sprintf("key show  : %+v", t.Field(k).Name))
+			pddParams[t.Field(k).Name] = v.Field(k).Interface()
+		}
+	}
 	// fmt.Println(fmt.Sprintf("pddparams show  : %+v", pddParams))
 	// values := reflect.ValueOf(pddParams)
 	// keys := reflect.TypeOf(pddParams)
@@ -89,7 +102,7 @@ func SetSignJointUrlParam(param interface{}) string {
 		case string:
 			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), value})
 		case int:
-			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), string(value)})
+			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), strconv.Itoa(value)})
 		case bool:
 			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), strconv.FormatBool(value)})
 		}

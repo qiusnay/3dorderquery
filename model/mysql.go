@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/logger"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/qiusnay/3dorderquery/util"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -32,19 +32,21 @@ var conf config
 
 var DB *gorm.DB
 
+var Log *logrus.Logger
+
 func createConnectionURL(username, password, addr, dbName string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", username, password, addr, dbName)
 }
 
 func DbStart() (*gorm.DB, error) {
+	Log = util.NewLogger("mysql")
 	util.Config().Bind("conf", "database", &conf)
 
-	logger.Infof("database connect erro : %s", conf.Master.Addr)
+	Log.Infof("database connect erro : %s", conf.Master.Addr)
 	db, err := gorm.Open("mysql", createConnectionURL(conf.Master.Username, conf.Master.Password, conf.Master.Addr, conf.Master.DbName))
 	if err != nil {
-		logger.Infof("database connect erro : %s", err)
+		Log.Infof("database connect erro : %s", err)
 		return db, err
-		//panic("连接数据库失败")
 	}
 	DB = db
 	// db.LogMode(true)
@@ -58,7 +60,7 @@ func DbStart() (*gorm.DB, error) {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	db.DB().SetConnMaxLifetime(time.Hour)
 
-	DB.LogMode(true)
+	// DB.LogMode(true)
 
 	go keepDbAlived(db)
 	go Automigrate()
@@ -73,6 +75,7 @@ func Automigrate() {
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东原始订单数据表{qiusnay}'").CreateTable(&JdOriginalOrder{})
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '拼多多原始订单数据表{qiusnay}'").CreateTable(&PddOriginalOrder{})
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '京东商品数据表{qiusnay}'").CreateTable(&JdItemOriginal{})
+		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '拼多多商品数据表{qiusnay}'").CreateTable(&PddItemOriginal{})
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '订单商品表{qiusnay}'").CreateTable(&TbDingdanItems{})
 		DB.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 comment '订单表{qiusnay}'").CreateTable(&TbDingdan{})
 	} else {
@@ -90,9 +93,9 @@ func keepDbAlived(db *gorm.DB) {
 		<-t
 		err = db.DB().Ping()
 		if err != nil {
-			logger.Infof("database ping: %s", err)
+			Log.Infof("database ping: %s", err)
 		} else {
-			logger.Infof("database ping sucess")
+			Log.Infof("database ping sucess")
 		}
 	}
 }

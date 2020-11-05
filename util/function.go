@@ -5,8 +5,29 @@ import (
 	"encoding/hex"
 	"io/ioutil"
 	"net/http"
-	// "github.com/google/logger"
+	"time"
+
+	"github.com/rifflock/lfshook"
+	"github.com/sirupsen/logrus"
 )
+
+var Log map[string]*logrus.Logger
+
+func NewLogger(Logname string) *logrus.Logger {
+	cLog := Log[Logname]
+	if cLog != nil {
+		return cLog
+	}
+	pathMap := lfshook.PathMap{
+		logrus.InfoLevel: "./log/" + Logname + "." + time.Now().Format("2006-01-02") + ".log",
+	}
+	cLog = logrus.New()
+	cLog.Hooks.Add(lfshook.NewHook(
+		pathMap,
+		&logrus.JSONFormatter{},
+	))
+	return cLog
+}
 
 //生成 MD5
 func Md5(s string) string {

@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/model"
 )
 
@@ -15,7 +14,6 @@ func (s *PddOrderCreate) Sync() {
 	//获取当前扫表的索引值
 	index, err := model.Redis.Get("pdd_order_scan_index").Result()
 	if err != nil {
-		logger.Info(fmt.Sprintf("redis key not exist,init"))
 		model.Redis.Set("pdd_order_scan_index", 0, 0).Err()
 	}
 	Int64Index, _ := strconv.ParseInt(index, 10, 64)

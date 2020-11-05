@@ -2,14 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"reflect"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/model"
 	"github.com/qiusnay/3dorderquery/util"
 )
@@ -69,10 +67,8 @@ type configjd struct {
 var conf configjd
 
 //获取订单
-func (J *Jdsdk) GetOrders(start string, end string) interface{} {
-
+func (J *Jdsdk) FetchOrders(start string, end string) interface{} {
 	util.Config().Bind("conf", "thirdpartysdk", &conf)
-	// logger.Info(fmt.Sprintf("get jd order %+v", conf))
 	Param := J.GetParams(start, end)
 	J.SetSignJointUrlParam(Param)
 	var urls strings.Builder
@@ -84,7 +80,7 @@ func (J *Jdsdk) GetOrders(start string, end string) interface{} {
 	if e != nil {
 		panic(e)
 	}
-	logger.Info(fmt.Sprintf("get jd order %+v", string(response.JdUnionOpenOrderRowQueryResponse.Result)))
+	// Log.Info(fmt.Sprintf("get jd order %+v", string(response.JdUnionOpenOrderRowQueryResponse.Result)))
 	result := JdOrderResult{}
 	e = json.Unmarshal([]byte(response.JdUnionOpenOrderRowQueryResponse.Result), &result)
 	if e != nil {
@@ -94,7 +90,7 @@ func (J *Jdsdk) GetOrders(start string, end string) interface{} {
 		// model.DB.Table("tb_jd_original_order").Create(&order)
 		model.DB.Table("tb_jd_original_order").Create(&order)
 	}
-	return result
+	return urls.String()
 }
 
 //生成请求参数和签名
