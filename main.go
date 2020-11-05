@@ -118,7 +118,7 @@ func (z *ZfyxSdk) FetchJdGoodsBy30Min(TimeMinutes int) {
 		<-timer1.C
 		ShopSdk := new(service.JdItemsdk)
 		for _, brand := range []int{1, 2, 10, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 109, 110, 125, 129, 130} {
-			FetchUrl := ShopSdk.FetchJdItems(brand)
+			FetchUrl := ShopSdk.FetchJdItems(brand, log)
 			log.Info(fmt.Sprintf("当前抓取地址: %s", FetchUrl))
 		}
 	}

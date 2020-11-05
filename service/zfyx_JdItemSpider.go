@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/qiusnay/3dorderquery/model"
 	"github.com/qiusnay/3dorderquery/util"
 )
@@ -61,7 +63,7 @@ func (J *JdItemsdk) GetParams(brand int) string {
 }
 
 //获取订单
-func (J *JdItemsdk) FetchJdItems(brand int) interface{} {
+func (J *JdItemsdk) FetchJdItems(brand int, log *logrus.Logger) interface{} {
 	util.Config().Bind("conf", "thirdpartysdk", &conf)
 	// logger.Info(fmt.Sprintf("get jd order %+v", conf))
 	Param := J.GetParams(brand)
@@ -71,7 +73,7 @@ func (J *JdItemsdk) FetchJdItems(brand int) interface{} {
 	urls.WriteString(J.SignAndUri)
 	body, _ := util.HttpGet(urls.String())
 	fmt.Println(urls.String())
-	// logger.Info(fmt.Sprintf("jd response %+v", string(body)))
+	// log.Info(fmt.Sprintf("jd response %+v", string(body)))
 	response := &JdKplOpenUnionSearchByelitedResponse{}
 	e := json.Unmarshal([]byte(body), &response)
 	if e != nil {
@@ -84,7 +86,7 @@ func (J *JdItemsdk) FetchJdItems(brand int) interface{} {
 		item.CreateTime = strconv.FormatInt(time.Now().Unix(), 10)
 		item.EliteId = response.JdKplOpenUnionSearchByelitedResponse.EliteId
 		model.DB.Table("tb_jd_original_items").Where("sku_id = ?", item.SkuId).First(&result)
-		// logger.Info(fmt.Sprintf("dddddd  %+v", result.SkuId))
+		// log.Info(fmt.Sprintf("dddddd  %+v", response.JdKplOpenUnionSearchByelitedResponse))
 		// int_sku_id, _ := strconv.Atoi(result.SkuId)
 		if result.SkuId > 0 {
 			model.DB.Table("tb_jd_original_items").Where("sku_id = ?", result.SkuId).Updates(map[string]interface{}{

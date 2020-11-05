@@ -137,43 +137,43 @@ func (PddOriginalOrder) TableName() string {
 
 type JdItemOriginal struct {
 	Id                    int64   `gorm:"primary_key;AUTO_INCREMENT"`
-	SkuId                 int64   `gorm:"comment:'商品ID';not null;unique_index:IX_skuid" json:"sku_id"`
-	Pid                   int64   `gorm:"comment:'spuid，其值为同款商品的主skuid';not null;" json:"pid"`
-	WareId                int64   `gorm:"comment:'款id';not null;" json:"ware_id"`
-	SkuName               string  `gorm:"type:varchar(500);comment:'商品名称';not null;" json:"sku_name"`
-	Cid1                  int     `gorm:"type:int;comment:'一级类目';not null;" json:"cid1"`
-	Cid1Name              string  `gorm:"type:varchar(50);comment:'一级类目名称';not null;" json:"cid1_name"`
-	Cid2                  int     `gorm:"type:int;comment:'二级类目';not null;" json:"cid2"`
-	Cid2Name              string  `gorm:"type:varchar(50);comment:'二级类目名称';not null;" json:"cid2_name"`
-	Cid3                  int     `gorm:"type:int;comment:'三级类目';not null;" json:"cid3`
-	Cid3Name              string  `gorm:"type:varchar(50);comment:'三级类目名称';not null;" json:"cid3_name"`
-	BrandCode             int     `gorm:"type:int;comment:'品牌编码';not null;" json:"brand_code`
-	BrandName             string  `gorm:"type:varchar(200);comment:'品牌名称';not null;" json:"brand_name"`
-	Owner                 string  `gorm:"type:varchar(50);comment:'g:自营, p:pop';not null;" json:"owner"`
-	ImageUrl              string  `gorm:"type:varchar(1000);comment:'图片信息';not null;" json:"image_url"`
-	ImgList               string  `gorm:"type:varchar(1000);comment:'图片信息数组';not null;" json:"img_list"`
-	Vid                   int     `gorm:"type:int;comment:'店铺Id';not null;" json:"vid"`
-	PcPrice               float64 `gorm:"type:decimal(18, 2);comment:'pc价格';not null;" json:"pc_price"`
-	WlPrice               float64 `gorm:"type:decimal(18, 2);comment:'无线价格';not null;" json:"wl_price"`
-	PcCommissionShare     float64 `gorm:"type:decimal(18, 2);comment:'PC佣金比例';not null;" json:"pc_commission_share"`
-	WlCommissionShare     float64 `gorm:"type:decimal(18, 2);comment:'无线佣金比例';not null;" json:"wl_commission_share"`
-	PcCommission          float64 `gorm:"type:decimal(18, 2);comment:'PC佣金';not null;" json:"pc_commission"`
-	WlCommission          float64 `gorm:"type:decimal(18, 2);comment:'无线佣金';not null;" json:"wl_commission"`
-	HasCoupon             int     `gorm:"type:int;comment:'是否有优惠券， 0 ：无 1： 有';not null;" json:"has_coupon"`
-	IsHot                 int     `gorm:"type:int;comment:'是否爆品， 0：否 1：是';not null;" json:"is_hot"`
-	CouponId              int     `gorm:"type:int;comment:'通用计划优惠券ID';not null;" json:"couponI_id"`
-	CouponLink            string  `gorm:"type:varchar(50);comment:'通用计划 优惠券链接';not null;" json:"coupon_link"`
-	RfId                  int     `gorm:"type:int;comment:'卡券系统batchId';not null;" json:"rf_id"`
-	Comments              int     `gorm:"type:int;comment:'评论数';not null;" json:"comments"` // 结算时间
-	GoodComments          int     `gorm:"type:int;comment:'好评数';not null;" json:"good_comments"`
-	GoodCommentsShare     float64 `gorm:"comment:'好评率';not null;" json:"good_comments_share"`
-	VenderName            string  `gorm:"type:varchar(100);comment:'店铺名称';not null;" json:"vender_name"`
-	InOrderCount30Days    int     `gorm:"type:int;comment:'SPU维度 - 30天联盟引入订单量';not null;" json:"in_order_count30_days"`
-	InOrderCount30DaysSku int     `gorm:"type:int;comment:'sku维度 -30联盟天引入订单';not null;" json:"in_order_count30_days_sku"`
-	IsPinGou              int     `gorm:"type:int;comment:'是否参与拼购（ 0 不拼购 1 拼购）';not null;" json:"is_pin_gou"`
-	PingouActiveId        int64   `gorm:"comment:'拼购活动id';not null;" json:"pingou_active_id"`
-	PingouPrice           float64 `gorm:"type:decimal(18, 2);comment:'拼购价格';not null;" json:"pingou_price"`
-	PingouTmCount         int     `gorm:"type:int;comment:'成团人数';not null;" json:"pingou_tm_count"`
+	SkuId                 int64   `gorm:"comment:'商品ID';not null;unique_index:IX_skuid" json:"SkuId"`
+	Pid                   int64   `gorm:"comment:'spuid，其值为同款商品的主skuid';not null;" json:"Pid"`
+	WareId                int64   `gorm:"comment:'款id';not null;" json:"WareId"`
+	SkuName               string  `gorm:"type:varchar(500);comment:'商品名称';not null;" json:"SkuName"`
+	Cid1                  int     `gorm:"type:int;comment:'一级类目';not null;" json:"Cid1"`
+	Cid1Name              string  `gorm:"type:varchar(50);comment:'一级类目名称';not null;" json:"Cid1Name"`
+	Cid2                  int     `gorm:"type:int;comment:'二级类目';not null;" json:"Cid2"`
+	Cid2Name              string  `gorm:"type:varchar(50);comment:'二级类目名称';not null;" json:"Cid2Name"`
+	Cid3                  int     `gorm:"type:int;comment:'三级类目';not null;" json:"Cid3`
+	Cid3Name              string  `gorm:"type:varchar(50);comment:'三级类目名称';not null;" json:"Cid3Name"`
+	BrandCode             int     `gorm:"type:int;comment:'品牌编码';not null;" json:"BrandCode`
+	BrandName             string  `gorm:"type:varchar(200);comment:'品牌名称';not null;" json:"BrandName"`
+	Owner                 string  `gorm:"type:varchar(50);comment:'g:自营, p:pop';not null;" json:"Owner"`
+	ImageUrl              string  `gorm:"type:varchar(1000);comment:'图片信息';not null;" json:"ImageUrl"`
+	ImgList               string  `gorm:"type:varchar(1000);comment:'图片信息数组';not null;" json:"ImgList"`
+	Vid                   int     `gorm:"type:int;comment:'店铺Id';not null;" json:"Vid"`
+	PcPrice               float64 `gorm:"type:decimal(18, 2);comment:'pc价格';not null;" json:"PcPrice"`
+	WlPrice               float64 `gorm:"type:decimal(18, 2);comment:'无线价格';not null;" json:"WlPrice"`
+	PcCommissionShare     float64 `gorm:"type:decimal(18, 2);comment:'PC佣金比例';not null;" json:"PcCommissionShare"`
+	WlCommissionShare     float64 `gorm:"type:decimal(18, 2);comment:'无线佣金比例';not null;" json:"WlCommissionShare"`
+	PcCommission          float64 `gorm:"type:decimal(18, 2);comment:'PC佣金';not null;" json:"PcCommission"`
+	WlCommission          float64 `gorm:"type:decimal(18, 2);comment:'无线佣金';not null;" json:"WlCommission"`
+	HasCoupon             int     `gorm:"type:int;comment:'是否有优惠券， 0 ：无 1： 有';not null;" json:"HasCoupon"`
+	IsHot                 int     `gorm:"type:int;comment:'是否爆品， 0：否 1：是';not null;" json:"IsHot"`
+	CouponId              int     `gorm:"type:int;comment:'通用计划优惠券ID';not null;" json:"CouponId"`
+	CouponLink            string  `gorm:"type:varchar(50);comment:'通用计划 优惠券链接';not null;" json:"CouponLink"`
+	RfId                  int     `gorm:"type:int;comment:'卡券系统batchId';not null;" json:"RfId"`
+	Comments              int     `gorm:"type:int;comment:'评论数';not null;" json:"Comments"` // 结算时间
+	GoodComments          int     `gorm:"type:int;comment:'好评数';not null;" json:"GoodComments"`
+	GoodCommentsShare     float64 `gorm:"comment:'好评率';not null;" json:"GoodCommentsShare"`
+	VenderName            string  `gorm:"type:varchar(100);comment:'店铺名称';not null;" json:"VenderName"`
+	InOrderCount30Days    int     `gorm:"type:int;comment:'SPU维度 - 30天联盟引入订单量';not null;" json:"InOrderCount30Days"`
+	InOrderCount30DaysSku int     `gorm:"type:int;comment:'sku维度 -30联盟天引入订单';not null;" json:"InOrderCount30DaysSku"`
+	IsPinGou              int     `gorm:"type:int;comment:'是否参与拼购（ 0 不拼购 1 拼购）';not null;" json:"IsPinGou"`
+	PingouActiveId        int64   `gorm:"comment:'拼购活动id';not null;" json:"PingouActiveId"`
+	PingouPrice           float64 `gorm:"type:decimal(18, 2);comment:'拼购价格';not null;" json:"PingouPrice"`
+	PingouTmCount         int     `gorm:"type:int;comment:'成团人数';not null;" json:"PingouTmCount"`
 	EliteId               int     `gorm:"type:int;index:IX_eliteId;comment:'频道ID:1-好券商品,2-超级大卖场,10-9.9专区,22-热销爆品,23-为你推荐,24-数码家电,25-超市,26-母婴玩具,27-家具日用,28-美妆穿搭,29-医药保健,30-图书文具,31-今日必推,32-品牌好货,33-秒杀商品,34-拼购商品,109-新品首发,110-自营,125-首购商品,129-高佣榜单,130-视频商品';not null;" json:"elite_id`
 	CreateTime            string  `gorm:"type:varchar(30);comment:'创建时间';not null;" json:"create_time"`
 	UpdateTime            string  `gorm:"type:varchar(30);index:IX_update_time;comment:'更新时间';not null;" json:"update_time"`
