@@ -3,8 +3,10 @@ package util
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/rifflock/lfshook"
@@ -19,14 +21,25 @@ func NewLogger(Logname string) *logrus.Logger {
 		return cLog
 	}
 	pathMap := lfshook.PathMap{
-		logrus.InfoLevel: "./log/" + Logname + "." + time.Now().Format("2006-01-02") + ".log",
+		logrus.InfoLevel:  "./log/" + Logname + "." + time.Now().Format("2006-01-02") + "-info.log",
+		logrus.ErrorLevel: "./log/" + Logname + "." + time.Now().Format("2006-01-02") + "-error.log",
+		logrus.WarnLevel:  "./log/" + Logname + "." + time.Now().Format("2006-01-02") + "-warn.log",
 	}
 	cLog = logrus.New()
+	// cLog.SetLevel(log.InfoLevel)
 	cLog.Hooks.Add(lfshook.NewHook(
 		pathMap,
 		&logrus.JSONFormatter{},
 	))
 	return cLog
+}
+
+//返回执行路径
+func PanicTrace(err interface{}) string {
+	stackBuf := make([]byte, 4096)
+	n := runtime.Stack(stackBuf, false)
+
+	return fmt.Sprintf("panic: %v %s", err, stackBuf[:n])
 }
 
 //生成 MD5

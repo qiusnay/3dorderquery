@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/model"
 	"github.com/qiusnay/3dorderquery/util"
 )
@@ -45,6 +44,7 @@ func (J *Pddsdk) GetParams(start string, end string) PddOrderReq {
 
 //获取订单
 func (J *Pddsdk) FetchOrders(start string, end string) interface{} {
+	Log := util.NewLogger("fetch_pdd_order")
 	util.Config().Bind("conf", "thirdpartysdk", &PddConf)
 	Param := J.GetParams(start, end)
 	// paramsString, _ := json.Marshal(Param)
@@ -54,7 +54,7 @@ func (J *Pddsdk) FetchOrders(start string, end string) interface{} {
 	urls.WriteString(SignAndUri)
 	body, _ := util.HttpGet(urls.String())
 	fmt.Println(urls.String())
-	logger.Info(fmt.Sprintf("response %+v", string(body)))
+	Log.Info(fmt.Sprintf("response %+v", string(body)))
 	response := &OrderListGetResponse{}
 	e := json.Unmarshal([]byte(body), &response)
 
@@ -62,7 +62,7 @@ func (J *Pddsdk) FetchOrders(start string, end string) interface{} {
 		panic(e)
 	}
 	for _, ord := range response.OrderListGetResponse.OrderList {
-		// logger.Info(fmt.Sprintf("response %+v", ord))
+		// Log.Info(fmt.Sprintf("response %+v", ord))
 		model.DB.Table("tb_pdd_original_order").Create(&ord)
 	}
 	return urls.String()

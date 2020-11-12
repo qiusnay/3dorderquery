@@ -30,6 +30,17 @@ type JdSysParam struct {
 	Param_json   string `json:"param_json"`
 }
 
+type JdSysItemUrlParam struct {
+	Method       string `json:"method"`
+	App_key      string `json:"app_key"`
+	Access_token string `json:"access_token"`
+	Timestamp    string `json:"timestamp"`
+	Format       string `json:"format"`
+	V            string `json:"v"`
+	Sign_method  string `json:"sign_method"`
+	Param_json   string `json:"param_json"`
+}
+
 type JdOrderReq struct {
 	PageNo       int    `json:"pageNo"`                 //页码，返回第几页结果
 	PageSize     int    `json:"pageSize"`               //每页包含条数，上限为500
@@ -70,7 +81,7 @@ var conf configjd
 func (J *Jdsdk) FetchOrders(start string, end string) interface{} {
 	util.Config().Bind("conf", "thirdpartysdk", &conf)
 	Param := J.GetParams(start, end)
-	J.SetSignJointUrlParam(Param)
+	J.SetJdSignJointUrlParam(Param)
 	var urls strings.Builder
 	urls.WriteString(conf.Jd.HOST)
 	urls.WriteString(J.SignAndUri)
@@ -94,7 +105,7 @@ func (J *Jdsdk) FetchOrders(start string, end string) interface{} {
 }
 
 //生成请求参数和签名
-func (J *Jdsdk) SetSignJointUrlParam(paramjson string) {
+func (J *Jdsdk) SetJdSignJointUrlParam(paramjson string) {
 	J.RequestParam.App_key = conf.Jd.APPKEY
 	J.RequestParam.Format = "json"
 	J.RequestParam.V = "1.0"

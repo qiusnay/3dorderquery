@@ -32,38 +32,43 @@ we_app_web_view_url:唤起微信app推广链接
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"os"
+	"net/url"
+	"reflect"
+	"sort"
 	"strings"
 	"time"
 
-	"github.com/google/logger"
 	"github.com/qiusnay/3dorderquery/service"
 	"github.com/qiusnay/3dorderquery/util"
 )
 
 func main() {
-	const logPath = "./log/api.log"
-	lf, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
-	if err != nil {
-		logger.Fatalf("Failed to open log file: %v", err)
-	}
-	logger.Init("Logger", false, true, lf)
+	Log := util.NewLogger("api")
 	mux := http.NewServeMux()
 	mux.Handle("/", &myAPIHandler{})
 	mux.HandleFunc("/api/getpddurl", getUrlPinduoduo)
+	mux.HandleFunc("/api/getjdurl", getUrlJd)
 	server := &http.Server{
 		Addr:         ":1210",
 		WriteTimeout: time.Second * 30, //设置30秒的写超时
 		Handler:      mux,
 	}
 	server.ListenAndServe() // 开启监听
+	defer func() {
+		if err := recover(); err != nil {
+			Log.Info(err)
+		}
+	}()
 }
 
 type GoodsPromotionUrlGenerateResponse struct {
 	GoodsPromotionUrlGenerateResponse struct {
-		GoodsPromotionUrlList []interface{} `json:"goods_promotion_url_list"`
-		RequestId             string        `json:"request_id"`
+		Code      int64       `json:"code"`
+		Message   string      `json:"message"`
+		Data      interface{} `json:"data"`
+		RequestId string      `json:"request_id"`
 	} `json:"goods_promotion_url_generate_response"`
 }
 
@@ -88,9 +93,10 @@ func (h *myAPIHandler) GetParams(r *http.Request, Conf service.Configpdd) servic
 }
 
 func getUrlPinduoduo(w http.ResponseWriter, r *http.Request) {
+	Log := util.NewLogger("api")
 	defer func() {
 		if err := recover(); err != nil {
-			logger.Error(err)
+			Log.Error(err)
 		}
 	}()
 	h := &myAPIHandler{}
@@ -102,14 +108,116 @@ func getUrlPinduoduo(w http.ResponseWriter, r *http.Request) {
 	urls.WriteString(pddUrl)
 	// fmt.Println(urls.String())
 	body, _ := util.HttpGet(urls.String())
+	newbody := strings.Replace(string(body), "goods_promotion_url_list", "data", 1)
 	response := &GoodsPromotionUrlGenerateResponse{}
+	e := json.Unmarshal([]byte(newbody), &response)
+	if e != nil {
+		panic(e)
+	}
+	Log.Info("pdd response : %+v", response.GoodsPromotionUrlGenerateResponse.Data)
+	// fmt.Println(fmt.Sprintf("get form : %+v", response.GoodsPromotionUrlGenerateResponse.GoodsPromotionUrlList))
+	// 睡眠4秒  上面配置了3秒写超时，所以访问 “/bye“路由会出现没有响应的现象
+	time.Sleep(100 * time.Microsecond)
+	response.GoodsPromotionUrlGenerateResponse.Code = 200
+	response.GoodsPromotionUrlGenerateResponse.Message = "success"
+	recommandUrl, _ := json.Marshal(response.GoodsPromotionUrlGenerateResponse)
+	w.Write([]byte(recommandUrl))
+}
+
+type configjd struct {
+	Jd service.Apiconfig `toml:"jd"`
+}
+
+var ApiJdConf configjd
+
+func (h *myAPIHandler) GetJdParams(r *http.Request, Conf configjd) string {
+	ParamStruct := service.JdUrlReq{}
+	ParamStruct.PromotionCodeReq.MaterialId = r.URL.Query().Get("materialId")
+	ParamStruct.PromotionCodeReq.SiteId = Conf.Jd.SITEID
+	bytes, _ := json.Marshal(ParamStruct)
+	return string(bytes)
+}
+
+type JdUnionOpenPromotionCommonGetResponse struct {
+	JdUnionOpenPromotionCommonGetResponse struct {
+		Result string `json:"result"`
+		Code   string `json:"code"`
+	} `json:"jd_union_open_promotion_common_get_response"`
+}
+
+func getUrlJd(w http.ResponseWriter, r *http.Request) {
+	Log := util.NewLogger("api")
+	defer func() {
+		if err := recover(); err != nil {
+			Log.Error(err)
+		}
+	}()
+	h := &myAPIHandler{}
+	util.Config().Bind("conf", "thirdpartysdk", &ApiJdConf)
+	Param := h.GetJdParams(r, ApiJdConf)
+	JdUrl := SetJdSignJointUrlParam(Param)
+	var urls strings.Builder
+	urls.WriteString(ApiJdConf.Jd.HOST)
+	urls.WriteString(JdUrl)
+	// fmt.Println(urls.String())
+	body, _ := util.HttpGet(urls.String())
+	response := &JdUnionOpenPromotionCommonGetResponse{}
 	e := json.Unmarshal([]byte(body), &response)
 	if e != nil {
 		panic(e)
 	}
+	Log.Info(fmt.Sprintf("jd url response %+v", response.JdUnionOpenPromotionCommonGetResponse.Result))
 	// fmt.Println(fmt.Sprintf("get form : %+v", response.GoodsPromotionUrlGenerateResponse.GoodsPromotionUrlList))
 	// 睡眠4秒  上面配置了3秒写超时，所以访问 “/bye“路由会出现没有响应的现象
 	time.Sleep(100 * time.Microsecond)
-	recommandUrl, _ := json.Marshal(response.GoodsPromotionUrlGenerateResponse.GoodsPromotionUrlList)
-	w.Write([]byte(recommandUrl))
+	// recommandUrl, _ := json.Marshal()
+	w.Write([]byte(response.JdUnionOpenPromotionCommonGetResponse.Result))
+
+}
+
+//生成请求参数和签名
+func SetJdSignJointUrlParam(paramjson string) string {
+	J := service.JdSysItemUrlParam{}
+	J.App_key = ApiJdConf.Jd.APPKEY
+	J.Format = "json"
+	J.V = "1.0"
+	J.Method = ApiJdConf.Jd.METHOD_GERNERATE_PROMOTION
+
+	J.Sign_method = "md5"
+	J.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+
+	J.Param_json = paramjson
+
+	values := reflect.ValueOf(J)
+	keys := reflect.TypeOf(J)
+	count := values.NumField()
+	SortSlice := util.Items{}
+	for i := 0; i < count; i++ {
+		value := values.Field(i)
+		key := keys.Field(i)
+		switch value.Kind() {
+		case reflect.String:
+			SortSlice = append(SortSlice, util.Onestruct{strings.ToLower(key.Name), value.String()})
+		case reflect.Int:
+			SortSlice = append(SortSlice, util.Onestruct{strings.ToLower(key.Name), value.String()})
+		}
+
+	}
+	sort.Sort(SortSlice)
+	var builder strings.Builder
+	u := url.Values{}
+	builder.WriteString(ApiJdConf.Jd.APPSECRET)
+	for _, person := range SortSlice {
+		if person.Value == "" {
+			continue
+		}
+		builder.WriteString(strings.ToLower(person.Key) + person.Value)
+		u.Add(strings.ToLower(person.Key), person.Value)
+	}
+	builder.WriteString(ApiJdConf.Jd.APPSECRET)
+
+	//生成签名
+	u.Add("sign", strings.ToUpper(util.Md5(builder.String())))
+	//拼接参数
+	return u.Encode()
 }

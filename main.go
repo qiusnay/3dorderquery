@@ -15,10 +15,8 @@ import (
 
 func main() {
 	Log := util.NewLogger("main")
-	Log.Info(fmt.Sprintf("作业启动" + strconv.Itoa(runtime.NumGoroutine())))
 	model.DbStart()
 	model.RedisStart()
-
 	var wg sync.WaitGroup
 	wg.Add(6)
 	c := ZfyxSdk{}
@@ -34,6 +32,7 @@ func main() {
 	go c.SyncJdOrderFromOriginal(1)
 	//订单同步 - 拼多多 1分钟
 	go c.SyncPddOrderFromOriginal(1)
+	Log.Info(fmt.Sprintf("作业启动,当前协程数 : " + strconv.Itoa(runtime.NumGoroutine())))
 	wg.Wait()
 }
 
@@ -44,8 +43,9 @@ func (z *ZfyxSdk) SyncJdOrderFromOriginal(TimeMinutes int) {
 	log := util.NewLogger("sync_order_jd")
 	defer func() {
 		if err := recover(); err != nil {
-			z.RestartRoutine("SyncJdOrderFromOriginal", TimeMinutes)
 			log.Error(fmt.Sprintf("京东订单同步异常,错误信息 : %v, 自动恢复 : %s", err, time.Now().Format("2006-01-02 15:04:05")))
+			log.Error(util.PanicTrace(err))
+			z.RestartRoutine("SyncJdOrderFromOriginal", TimeMinutes)
 		}
 	}()
 	for {
@@ -63,8 +63,9 @@ func (z *ZfyxSdk) SyncPddOrderFromOriginal(TimeMinutes int) {
 	log := util.NewLogger("sync_order_pdd")
 	defer func() {
 		if err := recover(); err != nil {
-			z.RestartRoutine("SyncPddOrderFromOriginal", TimeMinutes)
 			log.Error(fmt.Sprintf("拼多多订单同步异常,错误信息 : %v, 自动恢复 : %s", err, time.Now().Format("2006-01-02 15:04:05")))
+			log.Error(util.PanicTrace(err))
+			z.RestartRoutine("SyncPddOrderFromOriginal", TimeMinutes)
 		}
 	}()
 	for {
@@ -84,8 +85,9 @@ func (z *ZfyxSdk) FetchPddGoodsBy30Min(TimeMinutes int) {
 	log := util.NewLogger("fetch_pdd_goods")
 	defer func() {
 		if err := recover(); err != nil {
-			z.RestartRoutine("FetchPddGoodsBy30Min", TimeMinutes)
 			log.Error(fmt.Sprintf("拼多多商品抓取异常,错误信息 : %v, 自动恢复 : %s", err, time.Now().Format("2006-01-02 15:04:05")))
+			log.Error(util.PanicTrace(err))
+			z.RestartRoutine("FetchPddGoodsBy30Min", TimeMinutes)
 		}
 	}()
 	for {
@@ -108,8 +110,9 @@ func (z *ZfyxSdk) FetchJdGoodsBy30Min(TimeMinutes int) {
 	log := util.NewLogger("fetch_jd_goods")
 	defer func() {
 		if err := recover(); err != nil {
-			z.RestartRoutine("FetchJdGoodsBy30Min", TimeMinutes)
 			log.Error(fmt.Sprintf("京东商品抓取异常,错误信息 : %v, 自动恢复 : %s", err, time.Now().Format("2006-01-02 15:04:05")))
+			log.Error(util.PanicTrace(err))
+			z.RestartRoutine("FetchJdGoodsBy30Min", TimeMinutes)
 		}
 	}()
 	for {
@@ -129,8 +132,9 @@ func (z *ZfyxSdk) JdOrderFetchBy3min(TimeMinutes int) {
 	log := util.NewLogger("fetch_jd_order")
 	defer func() {
 		if err := recover(); err != nil {
-			z.RestartRoutine("JdOrderFetchBy3min", TimeMinutes)
 			log.Error(fmt.Sprintf("京东订单抓取异常,错误信息 : %v, 自动恢复 : %s", err, time.Now().Format("2006-01-02 15:04:05")))
+			log.Error(util.PanicTrace(err))
+			z.RestartRoutine("JdOrderFetchBy3min", TimeMinutes)
 		}
 	}()
 	for {
@@ -152,8 +156,9 @@ func (z *ZfyxSdk) PddOrderFetchBy3min(TimeMinutes int) {
 	log := util.NewLogger("fetch_pdd_order")
 	defer func() {
 		if err := recover(); err != nil {
-			z.RestartRoutine("PddOrderFetchBy3min", TimeMinutes)
 			log.Error(fmt.Sprintf("拼多多订单抓取异常,错误信息 : %v, 自动恢复 : %s", err, time.Now().Format("2006-01-02 15:04:05")))
+			log.Error(util.PanicTrace(err))
+			z.RestartRoutine("PddOrderFetchBy3min", TimeMinutes)
 		}
 	}()
 	for {

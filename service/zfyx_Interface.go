@@ -27,6 +27,7 @@ type Apiconfig struct {
 	METHOD                     string
 	HOST                       string
 	METHODITEMD                string
+	SITEID                     string
 	METHOD_GERNERATE_PROMOTION string
 	ACCESS_TOKEN               string
 }
@@ -56,11 +57,20 @@ type PddUrlReq struct {
 	Type                 string            `json:"type"`
 }
 
+type JdUrlReq struct {
+	PromotionCodeReq struct {
+		MaterialId string `json:"materialId"` //推广物料url，例如活动链接、商品链接等；不支持仅传入skuid
+		SiteId     string `json:"siteId"`     //网站ID/APP ID
+		// Type       string `json:"type"`
+	} `json:"promotionCodeReq"`
+}
+
 //生成请求参数和签名
 func SetSignJointUrlParam(param interface{}) string {
+	Log := util.NewLogger("main")
 	defer func() {
 		if err := recover(); err != nil {
-			// logger.Error(err)
+			Log.Error(err)
 		}
 	}()
 	pddParams := make(map[string]interface{})
