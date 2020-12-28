@@ -153,6 +153,7 @@ func (z *ZfyxSdk) JdOrderFetchBy3min(TimeMinutes int) {
 
 //拼多多订单抓取 3分钟
 func (z *ZfyxSdk) PddOrderFetchBy3min(TimeMinutes int) {
+	curTime := time.Now().Format("2006-01-02 15:04:05")
 	log := util.NewLogger("fetch_pdd_order")
 	defer func() {
 		if err := recover(); err != nil {
@@ -162,13 +163,14 @@ func (z *ZfyxSdk) PddOrderFetchBy3min(TimeMinutes int) {
 		}
 	}()
 	for {
-		log.Info(fmt.Sprintf("开始拼多多订单抓取,当前时间 : " + time.Now().Format("2006-01-02 15:04:05")))
+		log.Info(fmt.Sprintf("开始拼多多订单抓取,当前时间 : " + curTime))
 		timer1 := time.NewTimer(time.Second * time.Duration(60*TimeMinutes))
 		<-timer1.C
 
 		//拼多多订单抓单
 		ShopSdk := new(service.Pddsdk)
-		FetchUrl := ShopSdk.FetchOrders("2020-10-30 13:00:00", "2020-10-31 12:00:00")
+		startTime := time.Unix(int64((time.Now().Unix() - 60 * 60)), 0).Format("2006-01-02 15:04:05")
+		FetchUrl := ShopSdk.FetchOrders(startTime, curTime)
 		log.Info(fmt.Sprintf("当前抓取地址: %s", FetchUrl))
 	}
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
 	"net/url"
 	"reflect"
@@ -102,7 +103,7 @@ func SetSignJointUrlParam(param interface{}) string {
 			pddParams[t.Field(k).Name] = v.Field(k).Interface()
 		}
 	}
-	// fmt.Println(fmt.Sprintf("pddparams show  : %+v", pddParams))
+	//fmt.Println(fmt.Sprintf("pddparams show  : %+v", pddParams))
 	// values := reflect.ValueOf(pddParams)
 	// keys := reflect.TypeOf(pddParams)
 	// count := values.NumField()
@@ -115,8 +116,12 @@ func SetSignJointUrlParam(param interface{}) string {
 			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), strconv.Itoa(value)})
 		case bool:
 			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), strconv.FormatBool(value)})
+		case map[string]string:
+			mjson, _ :=json.Marshal(value)
+			SortSlice = append(SortSlice, util.Onestruct{Camel2Case(key), string(mjson)})
 		}
 	}
+	//fmt.Println(fmt.Sprintf("SortSlice show  : %+v", SortSlice))
 	sort.Sort(SortSlice)
 	var builder strings.Builder
 	u := url.Values{}

@@ -106,7 +106,7 @@ func getUrlPinduoduo(w http.ResponseWriter, r *http.Request) {
 	var urls strings.Builder
 	urls.WriteString(service.PddConf.Pdd.HOST)
 	urls.WriteString(pddUrl)
-	// fmt.Println(urls.String())
+	//fmt.Println(fmt.Sprintf("pddUrl %+v", pddUrl))
 	body, _ := util.HttpGet(urls.String())
 	newbody := strings.Replace(string(body), "goods_promotion_url_list", "data", 1)
 	response := &GoodsPromotionUrlGenerateResponse{}

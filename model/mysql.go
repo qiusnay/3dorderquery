@@ -42,7 +42,6 @@ func DbStart() (*gorm.DB, error) {
 	Log = util.NewLogger("mysql")
 	util.Config().Bind("conf", "database", &conf)
 
-	Log.Infof("database connect erro : %s", conf.Master.Addr)
 	db, err := gorm.Open("mysql", createConnectionURL(conf.Master.Username, conf.Master.Password, conf.Master.Addr, conf.Master.DbName))
 	if err != nil {
 		Log.Error("database connect erro : %s", err)
